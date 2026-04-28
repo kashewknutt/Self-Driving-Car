@@ -14,6 +14,8 @@ import itertools
 BACKGROUND_COLOR = {'red': 128, 'green': 126, 'blue': 120}
 TRACK_BORDER_COLOR = {'red': 250, 'green': 210, 'blue': 1}
 TRACK_BORDER_WIDTH = 4
+# Opaque pastel mint — fills inner polygon as finish zone (under stroke lines).
+FINISH_FILL_RGBA = (174, 223, 189, 255)
 CAR_SPRITE_PATH = 'assets/sprites/car.png'
 
 
@@ -47,6 +49,17 @@ class Drawer:
         self.score_label = Label(x=20, y=20)
 
     def __add_border_to_batch__(self, batch: Batch, track: Track):
+        finish_group = OrderedGroup(-1)
+        fill_map = []
+        fill_col = []
+        n_inner = len(track.inside_bound.vertices)
+        for point in track.inside_bound.vertices:
+            fill_map.append(point.x)
+            fill_map.append(point.y)
+            fill_col.extend(FINISH_FILL_RGBA)
+        batch.add(n_inner, GL_POLYGON, finish_group,
+                  ('v2f', fill_map), ('c4B', fill_col))
+
         in_map = []
         in_color = []
         in_cnt = 0
@@ -82,7 +95,8 @@ class Drawer:
         car_image.anchor_y = car_image.height // 2
 
         self.car_sprite = Sprite(
-            car_image, x=car.position.x, y=car.position.y, batch=batch)
+            car_image, x=car.position.x, y=car.position.y,
+            batch=batch, group=OrderedGroup(2))
         self.car_sprite.scale_x = car.width / car_image.width
         self.car_sprite.scale_y = car.height / car_image.height
 

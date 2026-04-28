@@ -6,12 +6,14 @@ from views.drawer import Drawer
 import pyglet
 from pyglet.window import key
 
-track = Track.load_from_file('assets/tracks/track-1.trk')
+TRACK_FILE = 'assets/tracks/track-short.trk'
+EVAL_LINES = 'assets/evaluator_lines/track-short.lns'
+
+track = Track.load_from_file(TRACK_FILE)
 car = Car(width=24, height=45)
 car.init_position(track.start_point, track.start_direction)
 
-evaluator = LineEvaluator.load_lines_from_file(
-    car, track, "assets/evaluator_lines/track-1.lns")
+evaluator = LineEvaluator.load_lines_from_file(car, track, EVAL_LINES)
 
 driver = DeepQDriver(
     gamma=0.99, epsilon=0.8, epsilon_decay=0.99, epsilon_min=0.1,
