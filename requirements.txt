@@ -1,0 +1,15 @@
+# Apple Silicon + Metal: use Python 3.11 and recreate your venv before installing (see README).
+# TensorFlow bundles Keras — use tensorflow.keras in code; do not install standalone keras.
+#
+# tensorflow==2.18.1 pairs with tensorflow-metal 1.2.0 on Apple Silicon (not 1.1.0 — ABI mismatch / Symbol not found for tsl::internal::LogMessage).
+# See: https://github.com/tensorflow/tensorflow/issues/84167
+
+tensorflow==2.18.1
+
+# Metal acceleration on Apple Silicon only (skipped on Intel macOS / Linux).
+tensorflow-metal==1.2.0; sys_platform == "darwin" and platform_machine == "arm64"
+
+numpy>=1.26,<2.1
+
+# Legacy immediate-mode graphics — incompatible with Pyglet 2.x without a renderer rewrite.
+pyglet>=1.5.27,<2

@@ -1,3 +1,4 @@
+import pyglet
 from pyglet.graphics import *
 from pyglet.gl import *
 from pyglet.image import *

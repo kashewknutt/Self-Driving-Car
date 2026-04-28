@@ -3,19 +3,29 @@ from models.objects.car import Car
 from controllers.evaluators.line_evaluator import LineEvaluator
 from controllers.drivers.deep_q_driver import DeepQDriver
 from views.drawer import Drawer
-import os
 import pyglet
+from pyglet.window import key
 
-track = Track.load_from_file('assets/tracks/track-1.trk')
+TRACK_FILE = 'assets/tracks/track-short.trk'
+EVAL_LINES = 'assets/evaluator_lines/track-short.lns'
+
+track = Track.load_from_file(TRACK_FILE)
 car = Car(width=24, height=45)
 car.init_position(track.start_point, track.start_direction)
+car.speed = 35.0
 
-evaluator = LineEvaluator.load_lines_from_file(
-    car, track, "assets/evaluator_lines/track-1.lns")
+evaluator = LineEvaluator.load_lines_from_file(car, track, EVAL_LINES)
 
 driver = DeepQDriver(
-    gamma=0.99, epsilon=0.8, epsilon_decay=0.99, epsilon_min=0.1,
-    learning_rate=0.01, accepted_sensors=10, layer_count=8, output_per_hidden=32, regulation_rate=0.0)
+    gamma=0.95,
+    epsilon=0.95,
+    epsilon_decay=0.997,
+    epsilon_min=0.12,
+    learning_rate=0.05,
+    accepted_sensors=10,
+    layer_count=5,
+    output_per_hidden=24,
+    regulation_rate=0.0)
 
 drawer = Drawer(1280, 720, car, track, evaluator)
 
@@ -51,10 +61,10 @@ def game_loop(dt: float):
 
     driver.remember(state, action, reward, new_state, done)
 
-    if (done or time_elapsed >= 300):
+    if (done or time_elapsed >= 120):
         driver.dump_memory_to_cache()
         print("Game", game_count, "ended!")
-        losses.append(driver.replay_memory(1 << 10, 10))
+        losses.append(driver.replay_memory(512, 2))
         scores.append(evaluator.get_score() + 100)
         driver.decay_epsilon()
         driver.last_explore = None
@@ -63,6 +73,7 @@ def game_loop(dt: float):
         last_score = 0.0
         time_elapsed = 0.0
         car.init_position(track.start_point, track.start_direction)
+        car.speed = 35.0
         evaluator.reset_score()
         skip_frame = True
 
@@ -81,6 +92,12 @@ def on_draw():
 def on_resize(width, height):
     drawer.resize_canvas(width, height)
     drawer.draw()
+
+
+@window.event
+def on_key_press(symbol, modifiers):
+    if symbol == key.ESCAPE:
+        pyglet.app.exit()
 
 
 pyglet.app.run()

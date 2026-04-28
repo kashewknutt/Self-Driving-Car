@@ -60,3 +60,5 @@ weights
 saved
 
 .vscode
+
+venv/

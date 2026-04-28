@@ -1,11 +1,10 @@
 from models.objects.track import Track
 from models.objects.car import Car
 from .base.driver import Driver
-from keras.models import Sequential
-from keras.layers import Dense, LeakyReLU
-from keras.optimizers import Adam
-from keras.regularizers import l2
-from collections import deque
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, LeakyReLU
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.regularizers import l2
 import numpy as np
 import random as rd
 
@@ -46,7 +45,7 @@ class DeepQDriver(Driver):
 
         self.model.compile(
             loss='mse',
-            optimizer=Adam(lr=learning_rate))
+            optimizer=Adam(learning_rate=learning_rate))
 
     def get_input_data(self, car: Car, track: Track):
         input_data = list(map(lambda x: x / car.max_vision,
