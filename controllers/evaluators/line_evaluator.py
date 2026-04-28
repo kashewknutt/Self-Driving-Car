@@ -40,6 +40,7 @@ class LineEvaluator(Evaluator):
         self.time_elapsed = 0.0
 
     def evaluate(self, dt: float):
+        self.time_elapsed += dt
         if (self.car.collision_bound.intersect_with(self.track.inside_bound)):
             self.linear_score -= 100
             return False
