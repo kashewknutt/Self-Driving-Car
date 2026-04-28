@@ -6,17 +6,14 @@ from controllers.drivers.player_driver import PlayerDriver
 from views.drawer import Drawer
 import pyglet
 
-TRACK_FILE = 'assets/tracks/track-short.trk'
-EVAL_LINES = 'assets/evaluator_lines/track-short.lns'
-
-track = Track.load_from_file(TRACK_FILE)
+track = Track.load_from_file('assets/tracks/track-1.trk')
 car = Car(width=24, height=45)
 car.init_position(track.start_point, track.start_direction)
-car.speed = 35.0
 
-evaluator = LineEvaluator.load_lines_from_file(car, track, EVAL_LINES)
+evaluator = LineEvaluator.load_lines_from_file(
+    car, track, "assets/evaluator_lines/track-1.lns")
 
-driver = DeepQDriver(accepted_sensors=10, layer_count=5, output_per_hidden=24)
+driver = DeepQDriver(accepted_sensors=10, layer_count=8, output_per_hidden=32)
 driver.load_model_weights('model.h5')
 
 drawer = Drawer(1280, 720, car, track, evaluator)
@@ -39,7 +36,6 @@ def game_loop(dt: float):
 
     if (done):
         car.init_position(track.start_point, track.start_direction)
-        car.speed = 35.0
         evaluator.reset_score()
 
 
